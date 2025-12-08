@@ -1,0 +1,196 @@
+:root {
+  --bg-color: #111;
+  --game-bg: #0a0a10;
+  --border-color: #00ffff;
+  --text-color: #00ffff;
+  --glow-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+}
+
+body.light-mode {
+  --bg-color: #f0f0f0;
+  --game-bg: #ffffff;
+  --border-color: #333;
+  --text-color: #111;
+  --glow-shadow: none;
+  /* Remove glow for cleaner look in light mode */
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  /* Prevent scrollbars */
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--bg-color);
+  font-family: 'Orbitron', 'Inter', sans-serif;
+  /* Prioritize Orbitron */
+  color: var(--text-color);
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  /* Reduced gap */
+  width: 100%;
+  height: 100vh;
+  /* Force full viewport height */
+  overflow: hidden;
+  padding: 10px;
+  /* Add padding to prevent edge touching */
+  box-sizing: border-box;
+}
+
+#game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 95vw;
+  /* Match canvas width constraints */
+}
+
+h1 {
+  margin: 0;
+  font-size: 2rem;
+  text-shadow: 0 0 10px var(--text-color);
+}
+
+.header-controls {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+#high-score-display {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.2rem;
+  color: #ff00ff;
+  /* Neon Magenta */
+  text-shadow: 0 0 5px #ff00ff;
+  margin-right: 20px;
+}
+
+/* Switch Styles */
+.theme-switch-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.8rem;
+}
+
+.theme-switch {
+  display: inline-block;
+  height: 24px;
+  /* Reduced height */
+  position: relative;
+  width: 50px;
+  /* Reduced width */
+}
+
+.theme-switch input {
+  display: none;
+}
+
+.slider {
+  background-color: #ccc;
+  bottom: 0;
+  cursor: pointer;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transition: .4s;
+}
+
+.slider:before {
+  background-color: #fff;
+  bottom: 4px;
+  content: "";
+  height: 16px;
+  left: 4px;
+  position: absolute;
+  transition: .4s;
+  width: 16px;
+}
+
+input:checked+.slider {
+  background-color: #66bb6a;
+}
+
+input:checked+.slider:before {
+  transform: translateX(26px);
+}
+
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+#game-footer {
+  width: 100%;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.controls span {
+  margin: 0 15px;
+  font-size: 1.2rem;
+  opacity: 0.8;
+}
+
+#game-container {
+  position: relative;
+  box-shadow: var(--glow-shadow);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  background-color: var(--game-bg);
+
+  /* Flex shrinking logic */
+  flex: 1;
+  min-height: 0;
+  /* Crucial for scrolling flex items */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 100%;
+}
+
+canvas {
+  display: block;
+  /* Maximize but preserve aspect ratio */
+  width: auto;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* Optional Scanline effect - UPDATED for grid */
+#scanlines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background:
+    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%),
+    linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+  background-size: 100% 2px, 3px 100%;
+  pointer-events: none;
+  z-index: 10;
+  border-radius: 12px;
+}

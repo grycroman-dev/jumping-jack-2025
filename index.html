@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="/logo.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jumping Jack 2025</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <div id="app">
+    <header id="game-header">
+      <h1>JUMPING JACK 2025</h1>
+      <div class="header-controls">
+        <div id="high-score-display">BEST: 0</div>
+        <div id="online-counter" style="margin-right: 20px; font-family: 'Orbitron'; font-weight: bold; color: #555;">
+          ONLINE: -</div>
+
+        <div class="theme-switch-wrapper">
+          <button id="menu-btn" class="retro-btn"
+            style="font-size: 24px; padding: 5px 15px; background: #000; border: 2px solid #00FFFF; color: #00FFFF;">☰</button>
+        </div>
+      </div>
+    </header>
+
+    <div id="game-container">
+      <canvas id="gameCanvas" width="1024" height="768"></canvas>
+      <div id="scanlines"></div>
+    </div>
+
+    <!-- MAIN MENU MODAL -->
+    <div id="menu-modal"
+      style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1001; justify-content: center; align-items: center; color: #FFF; font-family: 'Orbitron', sans-serif;">
+      <div
+        style="background: #111; border: 2px solid #00FFFF; padding: 40px; width: 300px; text-align: center; box-shadow: 0 0 20px #00FFFF; display: flex; flex-direction: column; gap: 15px;">
+        <h2 style="color: #00FFFF; margin-top: 0; text-shadow: 0 0 10px #00FFFF;">GAME MENU</h2>
+
+        <button id="menu-resume-btn" class="retro-btn"
+          style="background: #000; border: 2px solid #00FF00; color: #00FF00;">RESUME</button>
+        <button id="menu-restart-btn" class="retro-btn"
+          style="background: #000; border: 2px solid #FF5555; color: #FF5555;">RESTART</button>
+
+        <hr style="width: 100%; border-color: #333;">
+
+        <button id="menu-leaderboard-btn" class="retro-btn"
+          style="background: #000; border: 2px solid #FF00FF; color: #FF00FF;">LEADERBOARD 🏆</button>
+
+        <!-- Theme Toggle inside Menu -->
+        <button id="menu-theme-btn" class="retro-btn"
+          style="background: #000; border: 2px solid #FFF; color: #FFF;">THEME: DARK</button>
+
+        <!-- Sound Toggle inside Menu -->
+        <div
+          style="display: flex; align-items: center; justify-content: space-between; border: 1px solid #333; padding: 10px; background: #000;">
+          <span style="font-size: 14px; font-weight: bold; color: #DDD;">SOUND</span>
+          <label class="switch" style="position: relative; display: inline-block; width: 50px; height: 26px;">
+            <input type="checkbox" id="menu-sound-checkbox" checked>
+            <span class="slider round"
+              style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #555; transition: .4s; border-radius: 26px;"></span>
+          </label>
+        </div>
+
+        <button id="menu-help-btn" class="retro-btn"
+          style="background: #000; border: 2px solid #FFFF00; color: #FFFF00;">HELP ?</button>
+
+        <button id="menu-close-btn" class="retro-btn"
+          style="margin-top: 20px; background: #333; border: 1px solid #666; color: #CCC; font-size: 12px;">CLOSE
+          MENU</button>
+      </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="help-modal"
+      style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1002; justify-content: center; align-items: center; color: #FFF; font-family: 'Orbitron', sans-serif;">
+      <!-- ... content same as before ... -->
+      <div
+        style="background: #111; border: 2px solid #00FFFF; padding: 40px; max-width: 600px; text-align: left; box-shadow: 0 0 20px #00FFFF;">
+        <h2 style="color: #00FFFF; text-align: center; margin-top: 0;">HOW TO PLAY</h2>
+        <ul style="line-height: 1.6;">
+          <li><strong>ARROWS:</strong> Move Left/Right</li>
+          <li><strong>SPACE / UP:</strong> Jump</li>
+          <li><strong>ESC:</strong> Pause Game</li>
+          <li><strong>T:</strong> Change Visual Theme</li>
+        </ul>
+        <hr style="border-color: #333;">
+        <h3 style="color: #FF00FF;">SYSTEM REQUIREMENTS</h3>
+        <p><strong>Browser:</strong> Chrome, Edge, Firefox, or Safari (Latest versions).</p>
+        <p><strong>Resolution:</strong> Designed for Desktop (1024x768 or higher). Game scales to window.</p>
+        <p style="color: #FF5555;"><strong>Warning:</strong> Not compatible with Mobile/Touch devices (Keyboard
+          required).</p>
+        <div style="text-align: center; margin-top: 30px;">
+          <button id="close-help-btn" class="retro-btn" style="padding: 10px 30px; cursor: pointer;">CLOSE</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Leaderboard Modal -->
+    <div id="leaderboard-modal"
+      style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1002; justify-content: center; align-items: center; color: #FFF; font-family: 'Orbitron', sans-serif;">
+      <div
+        style="background: #111; border: 2px solid #FF00FF; padding: 40px; width: 500px; text-align: center; box-shadow: 0 0 20px #FF00FF;">
+        <h2 style="color: #FF00FF; margin-top: 0;">GLOBAL TOP 10</h2>
+
+        <table style="width: 100%; margin-bottom: 20px; border-collapse: collapse;">
+          <thead>
+            <tr style="color: #00FFFF; border-bottom: 1px solid #333;">
+              <th style="padding: 10px; text-align: left;">RANK</th>
+              <th style="padding: 10px; text-align: left;">NAME</th>
+              <th style="padding: 10px; text-align: right;">SCORE</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboard-body" style="font-size: 14px;">
+            <!-- Rows will be injected here -->
+            <tr>
+              <td colspan="3">Loading...</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div id="name-input-section"
+          style="display: none; margin-top: 20px; border-top: 1px solid #333; padding-top: 20px;">
+          <div id="name-input-form">
+            <p style="color: #E0E0E0;">NEW HIGH SCORE!</p>
+            <input type="text" id="player-name-input" placeholder="ENTER YOUR NAME" maxlength="10"
+              style="background: #000; border: 1px solid #FFF; color: #FFF; padding: 10px; font-family: 'Orbitron'; font-size: 16px; width: 200px; text-align: center;">
+            <button id="submit-score-btn" class="retro-btn"
+              style="border-color: #00FF00; color: #00FF00; margin-left: 10px; background: #000;">SUBMIT</button>
+          </div>
+          <div id="submit-success-message" style="display: none;">
+            <p style="color:#00FF00; font-family:Orbitron;">SCORE SUBMITTED!</p>
+          </div>
+          <div id="submit-error-message" style="display: none;">
+            <p style="color:#FF0000; font-family:Orbitron;">SUBMISSION FAILED! Check console.</p>
+          </div>
+        </div>
+
+        <div style="margin-top: 30px;">
+          <button id="close-leaderboard-btn" class="retro-btn"
+            style="padding: 10px 30px; cursor: pointer;">CLOSE</button>
+        </div>
+      </div>
+    </div>
+
+    <footer id="game-footer"
+      style="display: flex; flex-direction: column; align-items: center; gap: 10px; padding-bottom: 20px;">
+      <div class="controls">
+        <span>← → MOVE</span>
+        <span>SPACE / UP : JUMP</span>
+        <span>ESC : PAUSE</span>
+      </div>
+      <div style="font-size: 12px; color: rgba(255,255,255,0.4);">
+        Created by <a href="https://elvac.solutions/" target="_blank"
+          style="color: #00FFFF; text-decoration: none;">ELVAC SOLUTIONS</a>
+        <span style="margin-left: 15px; color: rgba(255,255,255,0.3);">v1.1.0</span>
+      </div>
+    </footer>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>
