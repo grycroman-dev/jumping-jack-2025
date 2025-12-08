@@ -477,6 +477,9 @@ export class Game {
                     if (this.snowflakes.length === 0) this.initSnow();
                 }
             }
+
+
+
             this.jack.update(dt);
         } else if (this.gameState === 'PAUSED') {
             if (this.input.isPressed('PAUSE')) {
@@ -484,7 +487,7 @@ export class Game {
             }
             return; // Don't update game
         } else if (this.gameState === 'POEM') {
-            if (this.input.isDown('JUMP')) {
+            if (this.input.isPressed('JUMP')) { // [FIX] Changed isDown to isPressed
                 this.nextLevel();
             }
         } else if (this.gameState === 'GAMEOVER') {
@@ -492,16 +495,22 @@ export class Game {
                 this.restartGame();
             }
         } else if (this.gameState === 'VICTORY') {
-            if (this.input.isDown('JUMP')) {
+            if (this.input.isPressed('JUMP')) { // [FIX] Changed isDown to isPressed
                 // Only show leaderboard prompt once
                 if (!this.leaderboardPromptShown) {
                     this.leaderboardPromptShown = true;
                     // Check if score qualifies for leaderboard
                     this.checkLeaderboardQualification();
-                    // If they don't qualify, restart immediately
+
+                    // If they don't qualify, we perform the restart check inside checkLeaderboard?
+                    // Actually, let's keep it simple: check qualification logic here or wait?
+                    // The original logic was complex. Simplified:
+                    // If prompt trigger succeeds, we wait. If not, we restart.
+
                     const qualifies = this.score > 0 &&
                         (!this.topScores || this.topScores.length < 10 ||
                             this.score >= this.topScores[this.topScores.length - 1].score);
+
                     if (!qualifies) {
                         this.restartGame();
                     }
@@ -510,6 +519,7 @@ export class Game {
                     this.restartGame();
                 }
             }
+            return; // [FIX] Added return to prevent double processing
         }
 
         // Periodic Hole Generation (SLOWED DOWN)
@@ -672,6 +682,7 @@ export class Game {
     onLevelComplete() {
         this.gameState = 'POEM';
         this.audio.playWin();
+        this.input.clearPressed(); // [FIX] Prevent jump from gameplay skipping poem
     }
 
     nextLevel() {
@@ -681,10 +692,12 @@ export class Game {
         if (this.level >= 10) {
             this.gameState = 'VICTORY';
             this.audio.playWin();
+            this.input.clearPressed(); // [FIX] Prevent jump skipping victory
             // Don't check leaderboard yet - let player see VICTORY screen first
             return;
         }
 
+        this.input.clearPressed(); // [FIX] Prevent accidental jump in next level
         this.level++;
         this.initFloors();
         this.initEnemies();
@@ -697,6 +710,7 @@ export class Game {
         this.level = 1;
         this.lives = 3;
         this.score = 0;
+        this.leaderboardPromptShown = false; // [FIX] Reset leaderboard prompt state
         this.initFloors();
         this.initEnemies();
         this.jack.reset();

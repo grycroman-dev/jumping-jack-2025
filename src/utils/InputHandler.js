@@ -17,6 +17,9 @@ export class InputHandler {
     }
 
     onKeyDown(e) {
+        // [FIX] Ignore keys if user is typing in an input field
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
         if (!this.keys[e.code]) {
             this.pressed[e.code] = true; // Set pressed only on new keydown
         }
@@ -49,5 +52,8 @@ export class InputHandler {
             }
         }
         return false;
+    }
+    clearPressed() {
+        this.pressed = {};
     }
 }
