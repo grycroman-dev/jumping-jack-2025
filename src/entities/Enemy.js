@@ -58,37 +58,96 @@ export class Enemy {
         ctx.translate(cx, cy);
         ctx.scale(scale, scale);
 
-        // Draw Spiked Ball (Enemy)
-        ctx.beginPath();
-        const spikes = 8;
-        const outerRadius = this.width / 2;
-        const innerRadius = this.width / 4;
+        if (this.game.theme === 'stargate') {
+            this.drawReplicator(ctx, cx, cy, scale);
+        } else {
+            // Draw Spiked Ball (Enemy)
+            ctx.beginPath();
+            const spikes = 8;
+            const outerRadius = this.width / 2;
+            const innerRadius = this.width / 4;
 
-        for (let i = 0; i < spikes; i++) {
-            let angle = (Math.PI * 2 * i) / spikes;
-            let x = Math.cos(angle) * outerRadius;
-            let y = Math.sin(angle) * outerRadius;
-            ctx.lineTo(x, y);
+            for (let i = 0; i < spikes; i++) {
+                let angle = (Math.PI * 2 * i) / spikes;
+                let x = Math.cos(angle) * outerRadius;
+                let y = Math.sin(angle) * outerRadius;
+                ctx.lineTo(x, y);
 
-            angle = (Math.PI * 2 * (i + 0.5)) / spikes;
-            x = Math.cos(angle) * innerRadius;
-            y = Math.sin(angle) * innerRadius;
-            ctx.lineTo(x, y);
+                angle = (Math.PI * 2 * (i + 0.5)) / spikes;
+                x = Math.cos(angle) * innerRadius;
+                y = Math.sin(angle) * innerRadius;
+                ctx.lineTo(x, y);
+            }
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            // Evil Eyes
+            ctx.fillStyle = '#000000'; // Black eyes
+            if (this.game.theme === 'dark') ctx.fillStyle = '#FFFFFF'; // White eyes in dark mode
+
+            ctx.beginPath();
+            ctx.arc(-8, -4, 4, 0, Math.PI * 2);
+            ctx.arc(8, -4, 4, 0, Math.PI * 2);
+            ctx.fill();
         }
-        ctx.closePath();
-        ctx.fill();
-        ctx.stroke();
-
-        // Evil Eyes
-        ctx.fillStyle = '#000000'; // Black eyes
-        if (this.game.theme === 'dark') ctx.fillStyle = '#FFFFFF'; // White eyes in dark mode
-
-        ctx.beginPath();
-        ctx.arc(-8, -4, 4, 0, Math.PI * 2);
-        ctx.arc(8, -4, 4, 0, Math.PI * 2);
-        ctx.fill();
 
         ctx.restore();
-        ctx.shadowBlur = 0;
+    }
+
+    drawReplicator(ctx, cx, cy, scale) {
+        // Simple Replicator Bug (Legos)
+        // Rectangular body, leg blocks
+        ctx.fillStyle = '#CCCCCC'; // Silver/purple tint
+        ctx.strokeStyle = '#8888AA';
+        ctx.lineWidth = 1;
+
+        // Random jitter for leg movement
+        const time = Date.now() / 100;
+
+        // Body Block
+        ctx.fillRect(-12, -8, 24, 10);
+        ctx.strokeRect(-12, -8, 24, 10);
+
+        // Head Block
+        ctx.fillStyle = '#DDDDDD';
+        ctx.fillRect(-8, -14, 16, 6);
+        ctx.strokeRect(-8, -14, 16, 6);
+
+        // Legs (4 per side-ish)
+        ctx.fillStyle = '#AAAAAA';
+        for (let i = 0; i < 4; i++) {
+            // Left legs
+            let legAngle = Math.sin(time + i) * 0.5 + 0.5; // 0 to 1
+            ctx.save();
+            ctx.translate(-10 + i * 5, 2);
+            ctx.rotate(Math.PI / 4 + legAngle * 0.2);
+            ctx.fillRect(0, 0, 4, 12);
+            ctx.restore();
+
+            // Right legs (visual perspective fail, just draw them)
+            // Let's just draw lines for legs, easier
+        }
+
+        // Better Legs: just draw angled rectangles
+        const legW = 4;
+        const legH = 12;
+
+        // Front Left
+        ctx.fillRect(-18, 0, legW, legH);
+        // Back Left
+        ctx.fillRect(-22, -4, legW, legH);
+
+        // Front Right
+        ctx.fillRect(14, 0, legW, legH);
+        // Back Right
+        ctx.fillRect(18, -4, legW, legH);
+
+        // Eyes (Glowing Purple/Red?)
+        ctx.fillStyle = '#FF00FF';
+        ctx.beginPath();
+        ctx.arc(-4, -10, 1.5, 0, Math.PI * 2);
+        ctx.arc(4, -10, 1.5, 0, Math.PI * 2);
+        ctx.fill();
     }
 }

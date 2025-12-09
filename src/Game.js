@@ -247,6 +247,7 @@ export class Game {
             menuThemeBtn.addEventListener('click', () => {
                 if (this.theme === 'dark') this.theme = 'light';
                 else if (this.theme === 'light') this.theme = 'xmas';
+                else if (this.theme === 'xmas') this.theme = 'stargate';
                 else this.theme = 'dark';
 
                 localStorage.setItem('jj_theme', this.theme);
@@ -257,8 +258,16 @@ export class Game {
                 if (this.theme === 'light') document.body.classList.add('light-mode');
                 if (this.theme === 'xmas') document.body.classList.add('xmas-mode');
 
+                if (this.theme === 'xmas') document.body.classList.add('xmas-mode');
+                if (this.theme === 'stargate') document.body.classList.add('stargate-mode');
+
                 if (this.theme === 'xmas') {
                     if (this.snowflakes.length === 0) this.initSnow();
+                } else if (this.theme === 'stargate') {
+                    // Maybe init stargate particles?
+                    this.snowflakes = []; // Clear snow
+                } else {
+                    this.snowflakes = []; // Clear snow
                 }
             });
         }
@@ -350,9 +359,13 @@ export class Game {
         } else if (this.theme === 'light') {
             btn.style.color = '#FFFFFF';
             btn.style.borderColor = '#FFFFFF';
-        } else {
+        } else if (this.theme === 'xmas') {
             btn.style.color = '#FF0000'; // Xmas
             btn.style.borderColor = '#00FF00';
+        } else {
+            // Stargate
+            btn.style.color = '#00AAFF'; // Event Horizon Blue
+            btn.style.borderColor = '#888888'; // Naquadah Grey
         }
     }
 
@@ -378,6 +391,16 @@ export class Game {
                 floor: '#bb2528', // Red
                 jack: '#ff0000', // Red (Santa)
                 enemy: '#f8b229'  // Gold
+            };
+        }
+        if (this.theme === 'stargate') {
+            return {
+                bg: '#101015', // Deep Space / SGC Dark Grey
+                grid: '#3a4a5a', // Metallic Grey-Blue
+                text: '#66ccff', // Glyph Blue
+                floor: '#555566', // Concrete / Metal
+                jack: '#5b7c5b', // SG Olive Green
+                enemy: '#ccaa00'  // Goa'uld Gold
             };
         }
         return {
@@ -463,6 +486,7 @@ export class Game {
             if (this.input.isPressed('THEME')) {
                 if (this.theme === 'dark') this.theme = 'light';
                 else if (this.theme === 'light') this.theme = 'xmas';
+                else if (this.theme === 'xmas') this.theme = 'stargate';
                 else this.theme = 'dark';
 
                 localStorage.setItem('jj_theme', this.theme);
@@ -475,6 +499,8 @@ export class Game {
 
                 if (this.theme === 'xmas') {
                     if (this.snowflakes.length === 0) this.initSnow();
+                } else {
+                    this.snowflakes = [];
                 }
             }
 

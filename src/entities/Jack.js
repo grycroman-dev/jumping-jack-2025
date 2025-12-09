@@ -268,6 +268,19 @@ export class Jack {
         }
         ctx.stroke();
 
+        // [THEME] Sunglasses for O'Neill
+        if (this.game.theme === 'stargate') {
+            ctx.fillStyle = '#111111';
+            // Draw sunglasses over eyes
+            // Left lens
+            ctx.beginPath();
+            ctx.rect(cx + eyeOffset - 6, this.y + 8, 5, 3);
+            ctx.rect(cx + eyeOffset + 1, this.y + 8, 5, 3);
+            // Bridge
+            ctx.rect(cx + eyeOffset - 1, this.y + 9, 2, 1);
+            ctx.fill();
+        }
+
 
         // Restore color
         ctx.shadowBlur = this.game.theme === 'dark' ? 15 : 0;
@@ -315,6 +328,29 @@ export class Jack {
         const legB = this.isGrounded ? -legCycle : -0.2;
         ctx.lineTo(cx + (legB * 15 * this.facing), this.y + 64 - (this.vy < 0 ? 5 : 0));
         ctx.stroke();
+
+        // [THEME] Stargate Extras (Cap & P90)
+        if (this.game.theme === 'stargate') {
+            const headY = this.y + 12; // Center of head
+
+            ctx.save();
+            // 1. Military Cap
+            ctx.fillStyle = '#3b4d3b'; // Darker Olive
+            ctx.beginPath();
+            // Cap top
+            ctx.fillRect(cx - 9, headY - 14, 18, 6);
+            // Cap bill/visor
+            ctx.fillStyle = '#1a261a'; // Dark brim
+            ctx.beginPath();
+            if (this.facing === 1) {
+                ctx.rect(cx - 9, headY - 9, 22, 3); // Extending right
+            } else {
+                ctx.rect(cx - 13, headY - 9, 22, 3); // Extending left
+            }
+            ctx.fill();
+
+            ctx.restore();
+        }
 
         // Santa Hat
         if (this.game.theme === 'xmas') {

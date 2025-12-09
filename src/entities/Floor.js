@@ -120,5 +120,83 @@ export class Floor {
                 ctx.fillRect(seg.start, this.y, seg.end - seg.start, this.height);
             }
         }
+
+        // Draw Stargate Graphics (if theme is stargate)
+        if (this.game.theme === 'stargate') {
+            for (let hole of this.holes) {
+                this.drawStargate(ctx, hole.x, hole.width);
+                // Handle Wrap Visuals
+                if (hole.x < 0) this.drawStargate(ctx, this.game.width + hole.x, hole.width);
+                if (hole.x + hole.width > this.game.width) this.drawStargate(ctx, hole.x - this.game.width, hole.width);
+            }
+        }
+    }
+
+    drawStargate(ctx, x, width) {
+        // Vertical Stargate
+        // Represented as a ring centered on the floor gap.
+
+        const cy = this.y + this.height / 2; // Floor center Y
+        const cx = x + width / 2;
+
+        // Size: The hole is ~80px wide. Radius ~40px.
+        // It needs to look like it stands UP.
+        const radius = width / 2 - 2;
+
+        ctx.save();
+
+        // 1. Event Horizon (The "Puddle")
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius - 5, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(0, 80, 200, 0.3)'; // Deep Blue Transparent
+        ctx.fill();
+
+        // Ripples
+        const time = Date.now() / 300;
+        const pulse = Math.sin(time) * 5;
+        // Draw a second lighter circle
+        ctx.beginPath();
+        ctx.arc(cx, cy, Math.max(0, radius - 15 + pulse), 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(100, 200, 255, 0.1)';
+        ctx.fill();
+
+        // 2. The Ring (Naquadah)
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+        ctx.strokeStyle = '#666677'; // Dark Metal
+        ctx.lineWidth = 8;
+        ctx.stroke();
+
+        // Inner lighter rim
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius - 4, 0, Math.PI * 2);
+        ctx.strokeStyle = '#888899';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // 3. Chevrons (9 of them ideally)
+        for (let i = 0; i < 9; i++) {
+            const angle = (Math.PI * 2 * i) / 9 - (Math.PI / 2); // Start top
+            const cX = cx + Math.cos(angle) * radius;
+            const cY = cy + Math.sin(angle) * radius;
+
+            // Chevron box
+            ctx.save();
+            ctx.translate(cX, cY);
+            ctx.rotate(angle);
+
+            ctx.fillStyle = '#444';
+            ctx.fillRect(-4, -4, 8, 8); // Box holder
+
+            // Glowing center
+            ctx.fillStyle = '#FF4400';
+            ctx.beginPath();
+            ctx.arc(0, 0, 2, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        ctx.restore();
     }
 }
