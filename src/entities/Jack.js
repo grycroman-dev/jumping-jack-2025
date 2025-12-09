@@ -18,6 +18,7 @@ export class Jack {
         this.isGrounded = false;
         this.stunnedTimer = 0;
         this.currentFloorIndex = -1;
+        this.lastGroundedFloorIndex = -1; // [NEW] Track last stable floor to prevent combo spam
         this.stepTimer = 0; // For sound steps
     }
 
@@ -102,6 +103,35 @@ export class Jack {
                         }
                         this.vy = 0;
                         this.isGrounded = true;
+
+                        // [NEW] Check for Score/Combo on Landing
+                        const landedFloorIndex = Math.floor((this.y + this.height / 2) / 96);
+
+                        // If we have a valid last floor, and we landed on a HIGHER floor (lower index)
+                        if (this.lastGroundedFloorIndex !== -1 && landedFloorIndex < this.lastGroundedFloorIndex) {
+                            // Detect floor change (upward)
+                            this.game.addHole();
+
+                            // Score with Combo
+                            this.game.comboManager.addCombo();
+                            const points = 10 * this.game.comboManager.multiplier;
+                            const oldScore = this.game.score;
+                            this.game.score += points;
+
+                            // Check for 750-point milestone (extra life spawn)
+                            const oldMilestone = Math.floor(oldScore / 750);
+                            const newMilestone = Math.floor(this.game.score / 750);
+                            if (newMilestone > oldMilestone) {
+                                // Crossed a 750-point threshold!
+                                this.game.spawnExtraLife();
+                            }
+
+                            // Visual Popup
+                            this.game.floatingTexts.add(`+${points}`, this.x + this.width / 2, this.y, '#00FF00');
+                        }
+
+                        // Update last grounded floor
+                        this.lastGroundedFloorIndex = landedFloorIndex;
                     }
                 }
             } else {
@@ -136,32 +166,7 @@ export class Jack {
         const cy = this.y + this.height / 2;
         const newFloorIndex = Math.floor(cy / 96);
 
-        if (this.currentFloorIndex !== -1 && newFloorIndex !== this.currentFloorIndex) {
-            // ONLY award points when moving UP (jumping through floors)
-            // newFloorIndex < currentFloorIndex means moving toward top (floor 0)
-            if (newFloorIndex < this.currentFloorIndex) {
-                // Detect floor change (upward)
-                this.game.addHole();
-
-                // Score with Combo
-                this.game.comboManager.addCombo();
-                const points = 10 * this.game.comboManager.multiplier;
-                const oldScore = this.game.score;
-                this.game.score += points;
-
-                // Check for 750-point milestone (extra life spawn)
-                const oldMilestone = Math.floor(oldScore / 750);
-                const newMilestone = Math.floor(this.game.score / 750);
-                if (newMilestone > oldMilestone) {
-                    // Crossed a 750-point threshold!
-                    this.game.spawnExtraLife();
-                }
-
-                // Visual Popup
-                this.game.floatingTexts.add(`+${points}`, this.x + this.width / 2, this.y, '#00FF00');
-            }
-            // If falling down (newFloorIndex > currentFloorIndex), don't award points
-        }
+        // Just track the floor index
         this.currentFloorIndex = newFloorIndex;
     }
 
@@ -173,6 +178,8 @@ export class Jack {
         this.vy = 0;
         this.isGrounded = false;
         this.stunnedTimer = 0;
+        this.currentFloorIndex = -1;
+        this.lastGroundedFloorIndex = -1;
 
         // this.game.onLifeLost();
         this.game.particles.emit(this.x, this.y, '#FF0000', 30, 200, 1.0); // Death explosion

@@ -1,0 +1,18 @@
+{
+    "rules": {
+        "presence": {
+            ".read": true,
+            "$id": {
+                ".write": true,
+                ".validate": "!newData.exists() || (newData.hasChildren(['joined', 'device']) && newData.child('joined').isNumber() && newData.child('device').isString())"
+            }
+        },
+        "scores": {
+            ".read": true,
+            "$scoreId": {
+                ".write": true,
+                ".validate": "!newData.exists() || (newData.hasChildren(['name', 'score', 'timestamp']) && newData.child('score').isNumber() && newData.child('name').isString() && newData.child('timestamp').isNumber())"
+            }
+        }
+    }
+}
