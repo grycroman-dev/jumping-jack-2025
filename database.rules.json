@@ -10,7 +10,8 @@
         "scores": {
             ".read": true,
             "$scoreId": {
-                ".write": true,
+                // Allow write only if the data doesn't exist yet (create only)
+                ".write": "!data.exists()",
                 ".validate": "!newData.exists() || (newData.hasChildren(['name', 'score', 'timestamp']) && newData.child('score').isNumber() && newData.child('name').isString() && newData.child('timestamp').isNumber())"
             }
         }

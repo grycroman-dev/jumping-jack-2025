@@ -87,53 +87,13 @@ export class OnlineManager {
             name: name,
             score: score,
             timestamp: serverTimestamp()
-        })
-            .then(() => {
-                // Cleanup old scores to keep only top 10
-                return this.cleanupOldScores();
-            })
-            .catch((error) => {
-                console.error('❌ Failed to save score:', error);
-                throw error;
-            });
+        }).catch((error) => {
+            console.error('❌ Failed to save score:', error);
+            throw error;
+        });
     }
 
-    async cleanupOldScores() {
-        if (!this.db) return;
 
-        try {
-            const scoresRef = ref(this.db, 'scores');
-            const snapshot = await get(scoresRef);
-
-            if (!snapshot.exists()) return;
-
-            // Get all scores with their keys
-            const allScores = [];
-            snapshot.forEach((child) => {
-                allScores.push({
-                    key: child.key,
-                    ...child.val()
-                });
-            });
-
-            // Sort by score descending
-            allScores.sort((a, b) => b.score - a.score);
-
-            // Keep only top 10, delete the rest
-            if (allScores.length > 10) {
-                const toDelete = allScores.slice(10);
-
-                const deletePromises = toDelete.map(score => {
-                    const scoreRef = ref(this.db, `scores/${score.key}`);
-                    return remove(scoreRef);
-                });
-
-                await Promise.all(deletePromises);
-            }
-        } catch (error) {
-            console.error('❌ Cleanup failed:', error);
-        }
-    }
 
     subscribeToLeaderboard(callback) {
         if (!this.db) return;
