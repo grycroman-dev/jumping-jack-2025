@@ -18,7 +18,8 @@ body.light-mode {
 html,
 body {
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   /* Prevent scrollbars */
 }
@@ -42,11 +43,14 @@ body {
   gap: 10px;
   /* Reduced gap */
   width: 100%;
+  /* Use dvh for mobile browsers to account for address bar */
   height: 100vh;
+  height: 100dvh;
   /* Force full viewport height */
   overflow: hidden;
   padding: 10px;
   /* Add padding to prevent edge touching */
+  padding-top: max(10px, env(safe-area-inset-top));
   box-sizing: border-box;
 }
 
@@ -193,4 +197,122 @@ canvas {
   pointer-events: none;
   z-index: 10;
   border-radius: 12px;
+}
+
+/* --- Touch Controls --- */
+#touch-controls {
+  display: none;
+  /* Hidden by default on desktop */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 20;
+  pointer-events: none;
+  /* Let clicks pass through empty areas */
+}
+
+.touch-btn {
+  pointer-events: auto;
+  /* Enable clicks on buttons */
+  background: rgba(0, 0, 0, 0.5);
+  border: 2px solid var(--border-color);
+  color: var(--text-color);
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  font-size: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+  /* Prevent default touch actions like scroll */
+  backdrop-filter: blur(4px);
+  outline: none;
+  padding: 0;
+  margin: 0;
+  -webkit-tap-highlight-color: transparent;
+  /* Retro styling */
+  box-shadow: 0 0 10px var(--border-color);
+}
+
+.touch-btn:active {
+  background: rgba(0, 255, 255, 0.3);
+  transform: scale(0.95);
+  box-shadow: 0 0 5px var(--border-color);
+}
+
+#touch-dpad {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  display: flex;
+  gap: 20px;
+}
+
+#touch-actions {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+}
+
+/* Show on touch devices */
+@media (pointer: coarse) {
+  #touch-controls {
+    display: block;
+  }
+}
+
+/* Base mobile adjustments (Screen size based) */
+@media (max-width: 768px) {
+
+  /* Hide keyboard instructions */
+  #game-footer .controls {
+    display: none;
+  }
+
+  /* Compact Header */
+  h1 {
+    font-size: 1.2rem;
+  }
+
+  .header-controls {
+    gap: 10px;
+  }
+
+  #high-score-display {
+    font-size: 0.9rem;
+    margin-right: 10px;
+  }
+
+  /* Make Online counter smaller too */
+  #online-counter {
+    font-size: 0.8rem !important;
+    /* Override inline style */
+    margin-right: 10px !important;
+  }
+
+  /* Adjust Game Container padding/margins if needed */
+  #app {
+    padding: 5px;
+    gap: 5px;
+  }
+
+  #game-header {
+    margin-bottom: 0;
+  }
+
+  /* Ensure footer is very compact */
+  #game-footer {
+    padding-bottom: 5px;
+    margin-top: 5px;
+  }
+
+  #game-footer span {
+    font-size: 0.7rem;
+    /* Smaller credits */
+  }
 }

@@ -56,4 +56,16 @@ export class InputHandler {
     clearPressed() {
         this.pressed = {};
     }
+
+    setKey(code, isDown) {
+        if (isDown) {
+            if (!this.keys[code]) {
+                this.pressed[code] = true;
+            }
+            this.keys[code] = true;
+        } else {
+            this.keys[code] = false;
+            this.down[code] = false;
+        }
+    }
 }
